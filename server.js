@@ -16,6 +16,11 @@ app.get('/mobile', (req,res) => {
 
 app.get('/play', (req,res) => {
     var videoId = req.query.videoId;
+    
     var video = youtubedl(videoId);
     video.pipe(res);
+
+    video.on('error', function (err){
+        res.send(null);
+    })
 })
