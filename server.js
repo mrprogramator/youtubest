@@ -1,7 +1,7 @@
 var express = require('express');
 var path    = require("path");
 var app = express();
-var youtubeDL = require('node-youtube-dl');
+var youtubedl = require('youtube-dl');
 
 
 app.use(express.static(__dirname ));
@@ -16,8 +16,6 @@ app.get('/mobile', (req,res) => {
 
 app.get('/play', (req,res) => {
     var videoId = req.query.videoId;
-    youtubeDL.download(videoId, 'bestaudio').then((stream) => {
-        res.setHeader('Content-type', 'audio/mpeg');
-        stream.pipe(res);
-    })
+    var video = youtubedl(videoId);
+    video.pipe(res);
 })
