@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+        <link rel="icon" type="image/png" href="img/icon.png" />
+        <title>YouTube Streaming</title>
+        <link href="libs/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet"/>
+        <style>
+            body
+            {
+                background:#f8f8f8;
+                font-family: sans-serif;
+                margin:0px;
+            }
+            .page-header
+            {
+                height: 3em;
+                padding: 0.7em;
+                position:fixed;
+                top:0;
+                width: 100%;
+                background:#1c1e27;
+                color:white;
+                z-index: 10;
+            }
+            .area-results
+            {
+                margin-top:4em;
+                padding-top:0.8em;
+                height: 100%;
+            }
+            .result-box
+            {
+                background:white;
+                margin:7px;
+                padding:7px;
+                border-radius:4px;
+                box-shadow:0px 4px 10px 3px lightgray;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="page-header">
+            <table style="width:100%">
+                <tr>
+                    <td style="width:20%;text-align: right">
+                        <div style="height:40px;width:47px;padding-top:7px;padding-left:19px;background:#204482;border-radius: 77% 10% 90% 80%;text-align: center">
+                            <div style="height:30px;width:30px;background:white;border-radius: 77% 10% 90% 80%">
+                            </div>
+                        </div>
+                    </td>
+                    <td id="title" style="width:50%;font-size: 1.3em">
+                        <strong>YouTube</strong> <x style="color:#4285f4">Streaming</x>
+                    </td>
+                    <td style="width:20%;font-size: 1.3em;text-align: right;padding-right:1em">
+                        <span onclick="showInputSearch(this)" class="fa fa-search"></span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="results" class="area-results">
+        </div>
+        <script>
+            if (screen.width > 800) {
+                window.location.href = "/";
+            }
+            var title = document.getElementById('title');
+            var searchResults = document.getElementById('results');
+            
+            function makeHTTPRequest(url, method, onSuccess, onError){
+                try
+                {
+                    var request = new XMLHttpRequest();
+                    request.open(method,url, true);
+                    request.onreadystatechange = function (){
+                        if (request.readyState == XMLHttpRequest.DONE) {
+                            onSuccess(request.responseText);
+                        }
+                    };
+                    request.onerror = onError;
+                    request.send();
+                }
+                catch(exception)
+                {
+                    onError(exception);
+                }
+            }
+
+            function showInputSearch(caller){
+                caller.onclick = search;
+                
+                title.innerHTML = "<form onsubmit=\"return search()\">"
+                                    +"<input id=\"search-input\" placeholder=\"Search on YouTube\""
+                                    +" type=\"search\" style=\"width:100%;font-size:0.8em;padding:0.4em\" />"
+                                +"</form>";
+
+                document.getElementById('search-input').focus();
+            }
+
+            function search(){
+                hideKeyboard();
+
+                var searchInput = document.getElementById('search-input');
+                
+                searchResults.innerHTML = "<div style=\"text-align:center\">Searching...</div>";
+                var searchText = searchInput.value;
+
+                makeHTTPRequest('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=' 
+                            + searchText + '&type=video&key=AIzaSyB5aNLXS6p869esiJFZMxsoxniDDWvmEgg','GET', function (response){
+                    response = JSON.parse(response);
+                    console.log(response);
+                    if(!response || !response.items || response.items.length == 0){
+                        searchResults.innerHTML = "<div style=\"text-align:center\">No results</div>"
+                    }
+                    else{
+                        var html = "<table style=\"width:100%\">";
+                        response.items.forEach(function (item){
+                            var fixedTitle = item.snippet.title.replace(/["']/g, "");
+    
+                            html += "<tr>"
+                                + "<td>"
+                                    + "<div class=\"result-box\">"
+                                        + "<table style=\"width:100%\">"
+                                            + "<tr>"
+                                                + "<td>"
+                                                    + "<div onclick=\"play('" + item.id.videoId + "','" + fixedTitle + "')\">" 
+                                                        +item.snippet.title
+                                                    +"</div>"
+                                                + "</td>"
+                                                + "<td style=\"text-align:right\">"
+                                                    + "<img src=\"" + item.snippet.thumbnails.default.url + "\"   onclick=\"play('" + item.id.videoId + "','" + fixedTitle + "')\" style=\"cursor:pointer\"/>"
+                                                +"</td>"
+                                            + "</tr>"
+                                            + "<tr>"
+                                                + "<td colspan=\"2\" id=\"" + item.id.videoId + "-results\">"
+                                                +"</td>"
+                                            +"</tr>"
+                                        +"</table>"
+                                    + "</div>"
+                                +"</td>"
+                                
+                            +"</tr>";
+                        })
+                        html += "</table>";
+                        searchResults.innerHTML = html;
+                    }
+                }, function (error){
+                    searchResults.innerHTML = "<div style=\"text-align:center\">"
+                                                + "<strong>Error: </strong>" + error
+                                            + "</div>";
+                });
+                
+                return false;
+            }
+
+            function play(videoId, fixedTitle) {
+                var mediaURL = "/play?videoId=" + videoId;
+
+                document.getElementById(videoId + '-results')
+                    .innerHTML = "<audio preload=\"true\" style=\"width:100%\" controls"
+                                    + " src=\"" + mediaURL + "\"></audio>";
+            }
+
+            function hideKeyboard(){
+                var field = document.createElement('input');
+                field.setAttribute('type', 'text');
+                document.body.appendChild(field);
+
+                setTimeout(function() {
+                    field.focus();
+                    setTimeout(function() {
+                        field.setAttribute('style', 'display:none;');
+                    }, 50);
+                }, 50);
+            }
+        </script>
+    </body>
+</html>

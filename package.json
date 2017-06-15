@@ -1,0 +1,13 @@
+{
+    "name": "yt",
+    "version": "0.0.1",
+    "private": true,
+    "author": {
+        "name": "Luis Alberto Saucedo Quiroga"
+    },
+    "description": "A youtube-dl service",
+    "dependencies": {
+        "express": "*",
+        "node-youtube-dl": "*"
+    }
+}
