@@ -1,0 +1,4 @@
+{
+    "dbConnectionString" : "postgres://cjifxbukmqsnwd:KKtKvBLNxHopLgmjzR5XFqGhmU@ec2-54-83-205-164.compute-1.amazonaws.com:5432/ddshvknkjjo1pe?ssl=true",
+    "dbName" : "ddshvknkjjo1pe"
+}

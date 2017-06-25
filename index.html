@@ -2,8 +2,12 @@
 <html>
     <head>
          <meta charset="utf-8">
-        <link rel="icon" type="image/png" href="img/icon.png" />
+        <link rel="icon" type="image/png" href="img/icon2.png" />
         <title>YouTube Streaming</title>
+        <meta name="google-signin-scope" content="profile email">
+        <meta name="google-signin-client_id" content="310890699929-ddvsu8caq08ae592scm04rfmo2s75rq4.apps.googleusercontent.com">
+        <script src="https://apis.google.com/js/platform.js" async defer></script>
+        <link href="libs/font-awesome-4.7.0/css/font-awesome.css" rel="stylesheet"/>
         <style>
             body
             {
@@ -51,121 +55,58 @@
                 margin-top:45px;
                 padding-top:20px;
             }
+
+            .option-btn:hover
+            {
+                color:#4285f4;
+                cursor:pointer;
+            }
         </style>
     </head>
     <body>
         <div class="page-header">
-            <table style="width:100%">
+            <table style="width:97%">
                 <tr>
-                    <td style="height: 40px;width:60px">
-                        <div style="height:40px;width:47px;padding-top:7px;padding-left:19px;background:#204482;border-radius: 77% 10% 90% 80%;text-align: center">
-                            <div style="height:30px;width:30px;background:white;border-radius: 77% 10% 90% 80%">
-                            </div>
-                        </div>
+                    <td style="height: 40px;width:60px;color:#4285f4;font-size:40px">
+                        <span class="fa fa-youtube-play"></span>
                     </td>
                     <td style="color:white;font-size:16px;width:100px;text-align: left">
                         <strong>YouTube</strong> <x style="color:#4285f4">Streaming</x>
                     </td>
                     <td style="text-align: center">
-                        <form onsubmit="return search()">
+                        <form onsubmit="return search('results', 'search-input')">
                             <input id="search-input" class="search-input" type="search" autofocus autocomplete="false"/>
-                            <button type="submit">SEARCH</button>
+                            <button style="background:transparent;color:white;border:1px solid gray;padding:3px 6px;cursor:pointer" type="submit">
+                                <span class="fa fa-search"></span> SEARCH
+                            </button>
                         </form>
+                    </td>
+                    <td id="user-div" style="text-align: right">
+                        <div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark" style="float:right"></div>
                     </td>
                 </tr>
             </table>
         </div>
         <div id="results" class="area-results">
         </div>
+        <div style="position:fixed;bottom:0;width:100%;background:rgba(28, 30, 39, 0.7);color:white">
+            <div id="now-playing-list" style="overflow-y:auto;max-height: 200px">
+            </div>
+            <div id="player">
+            </div>
+        </div>
+        <script src="libs/js/request.js"></script>
+        <script src="libs/js/templates/web-templates.js"></script>
+        <script src="libs/js/tracks.js"></script>
+        <script src="libs/js/search.js"></script>
+        <script src="libs/js/nowplaying.js"></script>
+        <script src="libs/js/stream.js"></script>
+        <script src="libs/js/user-manager.js"></script>
         <script>
             if (screen.width <= 800) {
                 window.location.href = "mobile";
             }
 
-            var searchResults = document.getElementById('results');
-            var searchInput = document.getElementById('search-input');
-
-            function makeHTTPRequest(url, method, onSuccess, onError){
-                try
-                {
-                    var request = new XMLHttpRequest();
-                    request.open(method,url, true);
-                    request.onreadystatechange = function (){
-                        if (request.readyState == XMLHttpRequest.DONE) {
-                            onSuccess(request.responseText);
-                        }
-                    };
-                    request.onerror = onError;
-                    request.send();
-                }
-                catch(exception)
-                {
-                    onError(exception);
-                }
-            }
-            
-            function search(){
-                searchResults.innerHTML = "<div style=\"text-align:center\">Searching...</div>";
-                var searchText = searchInput.value;
-
-                makeHTTPRequest('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=' 
-                            + searchText + '&type=video&key=AIzaSyB5aNLXS6p869esiJFZMxsoxniDDWvmEgg','GET', function (response){
-                    response = JSON.parse(response);
-                    console.log(response);
-                    if(!response || !response.items || response.items.length == 0){
-                        searchResults.innerHTML = "<div style=\"text-align:center\">No results</div>"
-                    }
-                    else{
-                        var html = "<table style=\"width:100%\">";
-                        response.items.forEach(function (item){
-                            var fixedTitle = item.snippet.title.replace(/["']/g, "");
-    
-                            html += "<tr>"
-                                + "<td>"
-                                    + "<div class=\"result-box\">"
-                                        + "<table style=\"width:100%\">"
-                                            + "<tr>"
-                                                + "<td>"
-                                                    + "<div  onclick=\"play('" + item.id.videoId + "','" + fixedTitle + "')\" style=\"cursor:pointer\">" 
-                                                        +item.snippet.title
-                                                    +"</div>"
-                                                    + "<div id=\"" + item.id.videoId + "-results\"></div>"
-                                                + "</td>"
-                                                + "<td style=\"text-align:right\">"
-                                                    + "<img src=\"" + item.snippet.thumbnails.default.url + "\"   onclick=\"play('" + item.id.videoId + "','" + fixedTitle + "')\" style=\"cursor:pointer\"/>"
-                                                +"</td>"
-                                            + "</tr>"
-                                        +"</table>"
-                                    + "</div>"
-                                +"</td>"
-                                
-                            +"</tr>";
-                        })
-                        html += "</table>";
-                        searchResults.innerHTML = html;
-                    }
-                }, function (error){
-                    searchResults.innerHTML = "<div style=\"text-align:center\"><strong>Error: </strong>" + error + "</div>";
-                });
-                
-                return false;
-            }
-
-            function play(videoId, fixedTitle) {
-                console.log('playing...', videoId, fixedTitle);
-                var mediaURL = "/play?videoId=" + videoId; 
-                document.getElementById(videoId + '-results').innerHTML = "<audio style=\"width:100%\" controls src=\"" + mediaURL + "\"></audio><br><button onclick=\"downloadURI('" + mediaURL + "','" + fixedTitle + ".mp3')\" >DOWNLOAD</button>";
-            }
-
-            function downloadURI(uri, name) {
-                var link = document.createElement("a");
-                link.download = name;
-                link.href = uri;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                delete link;
-            }
         </script>
     </body>
 </html>

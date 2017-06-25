@@ -8,6 +8,8 @@
     "description": "A youtube-dl service",
     "dependencies": {
         "express": "*",
-        "youtube-dl": "*"
+        "youtube-dl": "*",
+        "pg": "*",
+        "jsonfile": "*"
     }
 }
