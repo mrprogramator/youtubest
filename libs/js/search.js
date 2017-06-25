@@ -1,4 +1,5 @@
 function search(searchResultsId, searchInputId){
+    hideKeyboard();
     var searchResults = document.getElementById(searchResultsId);
     var searchInput = document.getElementById(searchInputId);
 
@@ -8,7 +9,7 @@ function search(searchResultsId, searchInputId){
     makeHTTPRequest('https://www.googleapis.com/youtube/v3/search?part=snippet&maxResults=50&q=' 
                 + searchText + '&type=video&key=AIzaSyB5aNLXS6p869esiJFZMxsoxniDDWvmEgg','GET', function (response){
         response = JSON.parse(response);
-        console.log(response);
+
         if(!response || !response.items || response.items.length == 0){
             searchResults.innerHTML = "<div style=\"text-align:center\">No results</div>"
         }
@@ -27,3 +28,15 @@ function search(searchResultsId, searchInputId){
     return false;
 }
 
+function hideKeyboard(){
+    var field = document.createElement('input');
+    field.setAttribute('type', 'text');
+    document.body.appendChild(field);
+
+    setTimeout(function() {
+        field.focus();
+        setTimeout(function() {
+            field.setAttribute('style', 'display:none;');
+        }, 50);
+    }, 50);
+}

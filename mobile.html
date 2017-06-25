@@ -134,7 +134,9 @@
             var searchResults = document.getElementById('results');
 
             function showInputSearch(caller){
-                caller.onclick = search;
+                caller.onclick = function (){
+                    search('results', 'search-input');
+                };
                 
                 title.innerHTML = "<form onsubmit=\"return search('results', 'search-input')\">"
                                     +"<input id=\"search-input\" placeholder=\"Search on YouTube\""
