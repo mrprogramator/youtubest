@@ -33,7 +33,7 @@ function getMyTracksTemplate(item){
                     + "<td onclick=\"showMyTrackItemOptions('" + item.track_id + "','" + item.name + "')\">"
                         + item['name'] 
                     +"</td>"
-                    + "<td style=\"width:30px\">"
+                    + "<td style=\"width:40px\">"
                         + " <a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"removeTrack(this, '" + item['track_id']+ "')\"><span class=\"fa fa-remove\"></span></a> "
                     +"</td>"
                 +"</tr>"
