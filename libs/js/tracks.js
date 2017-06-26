@@ -16,13 +16,13 @@ function showMyTracks(userId) {
 
 function addToMyTracks(caller, trackId, trackName) {
     var userId = localStorage.getItem('user-id');
-    caller.innerHTML = 'ADDING TRACK...';
+    caller.innerHTML = getAddingTemplate();
     caller.disabled = true;
     caller.onclick = "";
     
     makeHTTPRequest('/user/tracks/add?trackId=' + trackId + '&userId=' + userId, 'POST', function (responseText){
         myTracks.push({track_id : trackId, name : trackName });
-        caller.innerHTML = '<span class=\"fa fa-check-circle\"></span> ADDED';
+        caller.innerHTML = getAddedTemplate();
     })
 }
 

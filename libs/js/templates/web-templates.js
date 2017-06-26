@@ -111,3 +111,11 @@ function getNowPlayingSongTemplate(songId, songName){
                     + " <span class=\"fa fa-music\"></span/> " + songName
                 + "</div>";
 }
+
+function getAddingTemplate(){
+    return 'ADDING TRACK...';
+}
+
+function getAddedTemplate(){
+    return '<span class=\"fa fa-check-circle\"></span> ADDED';
+}

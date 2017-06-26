@@ -73,7 +73,18 @@ function getNowPlayingTemplate(videoId, songTitle, songURL){
                     + "<td>"
                         + "<div style=\"padding:14px;font-size:2em\">"
                             + "<a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"playPreviousSong('" + videoId + "')\"><span class=\"fa fa-backward\"></span></a> "
-                            + "<a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"playNextSong('" + videoId + "')\"><span class=\"fa fa-forward\"></span></a>"
+                            + "<a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"playNextSong('" + videoId + "')\"><span class=\"fa fa-forward\"></span></a>";
+                            if(localStorage.getItem('user-id')){
+                                if(myTracks.filter(function (t) { return t['track_id'] == videoId})[0] != null){
+                                    html += " <a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\"><span class=\"fa fa-check-circle\"></span></a>";
+                                }
+                                
+                                else{
+                                    html += " <a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"addToMyTracks(this, '" + videoId + "','" + songTitle + "')\"><span class=\"fa fa-plus-circle\"></span></a>";
+                                    
+                                }
+                            }
+                            html += "<a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"downloadURI('" + songURL + "','" + songTitle + ".mp3')\"><span class=\"fa fa-download\"></span></a>"
                             + "<a style=\"float:right;background:transparent;border:1px solid gray;padding:3px 6px;border-radius:4px;cursor:pointer\" onclick=\"toggleNowPlayingList()\"><span class=\"fa fa-bars\"></span></a> "
                         +"</div>"
                          + "<div style=\"font-size:15px\">"
@@ -81,30 +92,6 @@ function getNowPlayingTemplate(videoId, songTitle, songURL){
                         + "</div>"
                         + "<audio controls onended=\"playNextSong('" + videoId + "')\" onerror=\"playNextSong('" + videoId + "')\" autoplay src=\"" + songURL + "\" songid=\"" + videoId + "\" style=\"width:100%;background:transparent;color:white\">"
                         + "</audio>"
-                        + "<div style=\"padding-bottom:7px;text-align:center;font-size:2em\">";
-                            if(localStorage.getItem('user-id')){
-                                if(myTracks.filter(function (t) { return t['track_id'] == videoId})[0] != null){
-                                    html += " <button style=\"background:transparent;color:white;border:1px solid gray;padding:3px 6px;cursor:pointer\" disabled=\"true\" >"
-                                        +"<span class=\"fa fa-check-circle\"></span> ADDED"
-                                    +"</button>";
-                                }
-                                
-                                else{
-                                    html += " <button style=\"width:100%;background:transparent;color:white;border:1px solid gray;padding:3px 6px;cursor:pointer\" onclick=\"addToMyTracks(this, '" + videoId + "','" + songTitle + "')\" >"
-                                            +"<span class=\"fa fa-plus-circle\"></span> ADD TO MY TRACKS"
-                                        +"</button>";
-                                }
-                            }
-                            else{
-                                html += "<button style=\"width:100%;background:transparent;color:white;border:none;padding:3px 6px\">"
-                                        +"SIGN IN TO ADD THIS SONG TO YOUR SONGS!"
-                                    +"</button>";
-                            }                        
-                            
-                            html += "<br><button style=\"width:100%;background:transparent;color:white;border:1px solid gray;padding:3px 6px;cursor:pointer\" onclick=\"downloadURI('" + songURL + "','" + songTitle + ".mp3')\" >"
-                                +"<span class=\"fa fa-download\"></span> DOWNLOAD"
-                            +"</button>"
-                        + "</div>"
                     + "</td>"
                 + "</tr>"
             + "</table>";
@@ -113,9 +100,18 @@ function getNowPlayingTemplate(videoId, songTitle, songURL){
 }
 
 function getNowPlayingSongTemplate(songId, songName){
-    return "<div style=\"padding:14px 7px;font-size:1.4em;border-bottom:1px solid lightgray\">"
+    return "<div style=\"padding:14px 7px;border-bottom:1px solid lightgray\">"
                     + "<a id=\"" + songId + "-np-play-btn\" style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"play('" + songId + "','" + songName + "')\"><span class=\"fa fa-play\"></span></a>"
                     + " <a style=\"background:transparent;border:1px solid gray;padding:3px 6px;border-radius:100%;cursor:pointer\" onclick=\"removeFromNowPlaying(this, '" + songId + "')\"><span class=\"fa fa-remove\"></span></a> "
                     + " <span class=\"fa fa-music\"></span/> " + songName
                 + "</div>";
+}
+
+
+function getAddingTemplate(){
+    return '...';
+}
+
+function getAddedTemplate(){
+    return '<span class=\"fa fa-check-circle\"></span>';
 }
